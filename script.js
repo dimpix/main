@@ -1,13 +1,14 @@
 document.getElementById('connect-wallet-btn').addEventListener('click', async () => {
     try {
         // Ініціалізація TonConnect
-        const connector = new TonConnect({
-            manifestUrl: 'https://dimpix.github.io/telegram-mini-app//tonconnect-manifest.json',
+        const tonConnect = new TonConnect({
+            manifestUrl: 'https://dimpix.github.io/telegram-mini-app/tonconnect-manifest.json',
         });
 
-        // Підключення гаманця
-        const walletConnection = await connector.connectWallet();
-        
+        // Відображення QR-коду або запиту на підключення гаманця
+        const tonConnectUI = new TonConnectUI(tonConnect);
+        const walletConnection = await tonConnectUI.connectWallet();
+
         if (walletConnection) {
             alert('Гаманець підключено успішно!');
             document.getElementById('generate-btn').style.display = 'block';
