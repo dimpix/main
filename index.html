@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Mini App</title>
+    <title>Telegram Mini App with TON Connect</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/@tonconnect/sdk@latest/dist/tonconnect.min.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>Генератор випадкових чисел</h1>
         <button id="connect-wallet-btn">Підключити гаманець</button>
-        <button id="generate-btn">GENERATE</button>
+        <button id="generate-btn" style="display: none;">GENERATE</button>
         <p id="result"></p>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/tonweb@0.0.44/dist/tonweb.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
