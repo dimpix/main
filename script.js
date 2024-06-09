@@ -2,7 +2,7 @@ document.getElementById('connect-wallet-btn').addEventListener('click', async ()
     try {
         // Ініціалізація TonConnect
         const connector = new TonConnect({
-            manifestUrl: 'https://yourwebsite.com/tonconnect-manifest.json',
+            manifestUrl: 'https://dimpix.github.io/telegram-mini-app//tonconnect-manifest.json',
         });
 
         // Підключення гаманця
