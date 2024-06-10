@@ -1,20 +1,95 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Mini App with TON Connect</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://unpkg.com/@tonconnect/sdk@latest/dist/tonconnect.min.js"></script>
+    <meta charset="utf-8">
+    <script src="https://unpkg.com/@tonconnect/sdk@latest/dist/tonconnect-sdk.min.js" defer></script>
+    <style>
+        body {
+            width: 1000px;
+            margin: 0 auto;
+            font-family: Roboto, sans-serif;
+        }
+        .section {
+            padding: 20px;
+            margin: 20px;
+            border: 2px #AEFF6A solid;
+            border-radius: 8px;
+        }
+        #tonconnect-buttons>button {
+            display: block;
+            padding: 8px;
+            margin-bottom: 8px;
+            font-size: 18px;
+            font-family: inherit;
+        }
+        .featured {
+            font-weight: 800;
+        }
+        #generate-btn {
+            display: none;
+            padding: 8px;
+            font-size: 18px;
+            font-family: inherit;
+            margin-top: 20px;
+        }
+        #result {
+            font-size: 18px;
+            margin-top: 20px;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Генератор випадкових чисел</h1>
-        <button id="connect-wallet-btn">Підключити гаманець</button>
-        <button id="generate-btn" style="display: none;">GENERATE</button>
-        <p id="result"></p>
+    <div class="section" id="tonconnect-buttons">
+        <!-- Кнопки для підключення гаманців будуть тут -->
     </div>
+    <button id="generate-btn">GENERATE</button>
+    <p id="result"></p>
 
-    <script src="script.js"></script>
+    <script>
+        const $ = document.querySelector.bind(document);
+
+        window.onload = async () => {
+            const connector = new TonConnectSDK.TonConnect();
+            const walletsList = await connector.getWallets();
+
+            let buttonsContainer = $('#tonconnect-buttons');
+
+            for (let wallet of walletsList) {
+                let connectButton = document.createElement('button');
+                connectButton.innerText = 'Connect with ' + wallet.name;
+
+                if (wallet.embedded) {
+                    // `embedded` означає, що ми переглядаємо додаток з додатку гаманця
+                    // ми повинні якось відмітити цей варіант входу
+                    connectButton.classList.add('featured');
+                }
+
+                if (!wallet.bridgeUrl && !wallet.injected && !wallet.embedded) {
+                    // відсутність `bridgeUrl` означає, що цей додаток гаманця впроваджує JS-код
+                    // немає `injected` і немає `embedded` -> додаток недоступний на цій сторінці
+                    connectButton.disabled = true;
+                }
+
+                connectButton.addEventListener('click', async () => {
+                    try {
+                        await connector.connect({ jsBridgeKey: wallet.jsBridgeKey });
+                        alert('Гаманець підключено успішно!');
+                        document.getElementById('generate-btn').style.display = 'block';
+                    } catch (error) {
+                        console.error('Error connecting wallet:', error);
+                        alert('Сталася помилка підключення гаманця');
+                    }
+                });
+
+                buttonsContainer.appendChild(connectButton);
+            }
+        };
+
+        document.getElementById('generate-btn').addEventListener('click', () => {
+            const randomNumber = Math.floor(Math.random() * 100) + 1;
+            document.getElementById('result').textContent = `Випадкове число: ${randomNumber}`;
+        });
+    </script>
 </body>
 </html>
