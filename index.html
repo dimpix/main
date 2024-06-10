@@ -1,17 +1,89 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
-    <script src="https://unpkg.com/@tonconnect/sdk@latest/dist/tonconnect-sdk.min.js" defer></script>  <!-- (1) -->
-  </head>
-  <body>
+    <script src="https://unpkg.com/@tonconnect/sdk@latest/dist/tonconnect-sdk.min.js" defer></script>
+    <style>
+        body {
+            width: 1000px;
+            margin: 0 auto;
+            font-family: Roboto, sans-serif;
+        }
+        .section {
+            padding: 20px;
+            margin: 20px;
+            border: 2px #AEFF6A solid;
+            border-radius: 8px;
+        }
+        #tonconnect-buttons>button {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 8px;
+            font-size: 18px;
+            font-family: inherit;
+            border: none;
+            background-color: #fff;
+            cursor: pointer;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            transition: background-color 0.3s;
+        }
+        #tonconnect-buttons>button img {
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+        }
+        #tonconnect-buttons>button:hover {
+            background-color: #f0f0f0;
+        }
+        .featured {
+            font-weight: 800;
+        }
+    </style>
+</head>
+<body>
+    <div class="section" id="tonconnect-buttons">
+        <!-- Кнопки для підключення гаманців будуть тут -->
+    </div>
+    
     <script>
-      window.onload = async () => {
-        const connector = new TonConnectSDK.TonConnect();  // (2)
-        const walletsList = await connector.getWallets();  // (3)
-        
-        console.log(walletsList);
-      }
+        window.onload = async () => {
+            const connector = new TonConnectSDK.TonConnect();
+            const walletsList = await connector.getWallets();
+            
+            console.log(walletsList);
+
+            let buttonsContainer = document.getElementById('tonconnect-buttons');
+
+            for (let wallet of walletsList) {
+                let connectButton = document.createElement('button');
+                let icon = document.createElement('img');
+                icon.src = 'https://ton-connect.github.io/demo-dapp-with-react-ui/apple-touch-icon.png';
+                connectButton.appendChild(icon);
+                connectButton.innerHTML += 'Connect with ' + wallet.name;
+
+                if (wallet.embedded) {
+                    connectButton.classList.add('featured');
+                }
+
+                if (!wallet.bridgeUrl && !wallet.injected && !wallet.embedded) {
+                    connectButton.disabled = true;
+                }
+
+                connectButton.addEventListener('click', async () => {
+                    try {
+                        await connector.connect({ jsBridgeKey: wallet.jsBridgeKey });
+                        alert('Гаманець підключено успішно!');
+                    } catch (error) {
+                        console.error('Error connecting wallet:', error);
+                        alert('Сталася помилка підключення гаманця');
+                    }
+                });
+
+                buttonsContainer.appendChild(connectButton);
+            }
+        };
     </script>
-  </body>
+</body>
 </html>
