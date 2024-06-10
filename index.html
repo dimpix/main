@@ -25,49 +25,31 @@
         .featured {
             font-weight: 800;
         }
-        #generate-btn {
-            display: none;
-            padding: 8px;
-            font-size: 18px;
-            font-family: inherit;
-            margin-top: 20px;
-        }
-        #result {
-            font-size: 18px;
-            margin-top: 20px;
-            color: #333;
-        }
     </style>
 </head>
 <body>
     <div class="section" id="tonconnect-buttons">
         <!-- Кнопки для підключення гаманців будуть тут -->
     </div>
-    <button id="generate-btn">GENERATE</button>
-    <p id="result"></p>
-
+    
     <script>
-        const $ = document.querySelector.bind(document);
-
         window.onload = async () => {
             const connector = new TonConnectSDK.TonConnect();
             const walletsList = await connector.getWallets();
+            
+            console.log(walletsList);
 
-            let buttonsContainer = $('#tonconnect-buttons');
+            let buttonsContainer = document.getElementById('tonconnect-buttons');
 
             for (let wallet of walletsList) {
                 let connectButton = document.createElement('button');
                 connectButton.innerText = 'Connect with ' + wallet.name;
 
                 if (wallet.embedded) {
-                    // `embedded` означає, що ми переглядаємо додаток з додатку гаманця
-                    // ми повинні якось відмітити цей варіант входу
                     connectButton.classList.add('featured');
                 }
 
                 if (!wallet.bridgeUrl && !wallet.injected && !wallet.embedded) {
-                    // відсутність `bridgeUrl` означає, що цей додаток гаманця впроваджує JS-код
-                    // немає `injected` і немає `embedded` -> додаток недоступний на цій сторінці
                     connectButton.disabled = true;
                 }
 
@@ -75,7 +57,6 @@
                     try {
                         await connector.connect({ jsBridgeKey: wallet.jsBridgeKey });
                         alert('Гаманець підключено успішно!');
-                        document.getElementById('generate-btn').style.display = 'block';
                     } catch (error) {
                         console.error('Error connecting wallet:', error);
                         alert('Сталася помилка підключення гаманця');
@@ -85,11 +66,6 @@
                 buttonsContainer.appendChild(connectButton);
             }
         };
-
-        document.getElementById('generate-btn').addEventListener('click', () => {
-            const randomNumber = Math.floor(Math.random() * 100) + 1;
-            document.getElementById('result').textContent = `Випадкове число: ${randomNumber}`;
-        });
     </script>
 </body>
 </html>
